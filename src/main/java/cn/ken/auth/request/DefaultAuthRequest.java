@@ -6,7 +6,7 @@ import cn.ken.auth.enums.AuthExceptionCode;
 import cn.ken.auth.exception.AuthException;
 import cn.ken.auth.cache.AuthStateCache;
 import cn.ken.auth.cache.DefaultAuthStateCache;
-import cn.ken.auth.config.AuthConfigConstant;
+import cn.ken.auth.config.AuthConstant;
 import cn.ken.auth.model.AuthCallback;
 import cn.ken.auth.model.AuthResponse;
 import cn.ken.auth.model.AuthToken;
@@ -42,10 +42,10 @@ public abstract class DefaultAuthRequest implements AuthRequest {
     @Override
     public String authorize(String state) {
         return UrlBuilder.fromBaseUrl(source.authorize())
-                .add(AuthConfigConstant.RESPONSE_TYPE, "code")
-                .add(AuthConfigConstant.CLIENT_ID, config.getClientId())
-                .add(AuthConfigConstant.STATE, putState(state))
-                .add(AuthConfigConstant.REDIRECT_URI, config.getRedirectUri())
+                .add(AuthConstant.RESPONSE_TYPE, "code")
+                .add(AuthConstant.CLIENT_ID, config.getClientId())
+                .add(AuthConstant.STATE, putState(state))
+                .add(AuthConstant.REDIRECT_URI, config.getRedirectUri())
                 .build();
     }
 

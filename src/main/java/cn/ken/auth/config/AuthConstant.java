@@ -8,7 +8,7 @@ package cn.ken.auth.config;
  * @author <a href="https://github.com/Ken-Chy129">Ken-Chy129</a>
  * @since 2023/3/15 20:06
  */
-public class AuthConfigConstant {
+public class AuthConstant {
     
     public static String RESPONSE_TYPE = "response_type";
     
@@ -24,6 +24,17 @@ public class AuthConfigConstant {
     
     public static String ACCESS_TOKEN = "access_token";
     
+    public static String REFRESH_TOKEN = "refresh_token";
+    
     public static String GRANT_TYPE = "grant_type";
+    
+    public static String EXPIRE = "expires_in";
+    
+    public static class GrantType {
+        
+        public static String ACCESS = "authorization_code";
+        
+        public static String REFRESH = "refresh_token";
+    }
     
 }

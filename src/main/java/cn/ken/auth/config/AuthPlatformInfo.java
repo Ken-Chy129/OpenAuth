@@ -42,5 +42,32 @@ public enum AuthPlatformInfo implements AuthUrls {
         public String userInfo() {
             return "https://gitee.com/api/v5/user";
         }
+    },
+
+    QQ {
+        @Override
+        public String authorize() {
+            return "https://graph.qq.com/oauth2.0/authorize";
+        }
+
+        @Override
+        public String accessToken() {
+            return "https://graph.qq.com/oauth2.0/token";
+        }
+
+        @Override
+        public String userInfo() {
+            return "https://graph.qq.com/user/get_user_info";
+        }
+
+        @Override
+        public String refresh() {
+            return "https://graph.qq.com/oauth2.0/token";
+        }
+        
+        public String openId() {
+            return "https://graph.qq.com/oauth2.0/me";
+        }
+
     }
 }

@@ -9,7 +9,7 @@ import cn.ken.auth.exception.AuthException;
 import cn.ken.auth.model.AuthUserInfo;
 import cn.ken.auth.util.HttpClientUtil;
 import cn.ken.auth.util.UrlBuilder;
-import cn.ken.auth.config.AuthConfigConstant;
+import cn.ken.auth.config.AuthConstant;
 import cn.ken.auth.model.AuthCallback;
 import cn.ken.auth.model.AuthToken;
 import com.alibaba.fastjson.JSON;
@@ -38,34 +38,24 @@ public class GiteeAuthRequest extends DefaultAuthRequest {
     @Override
     protected AuthToken getAccessToken(AuthCallback callback) throws AuthException {
         String url = UrlBuilder.fromBaseUrl(source.accessToken())
-                .add(AuthConfigConstant.GRANT_TYPE, "authorization_code")
-                .add(AuthConfigConstant.CLIENT_ID, config.getClientId())
-                .add(AuthConfigConstant.CLIENT_SECRET, config.getClientSecret())
-                .add(AuthConfigConstant.CODE, callback.getCode())
-                .add(AuthConfigConstant.REDIRECT_URI, config.getRedirectUri())
+                .add(AuthConstant.GRANT_TYPE, AuthConstant.GrantType.ACCESS)
+                .add(AuthConstant.CLIENT_ID, config.getClientId())
+                .add(AuthConstant.CLIENT_SECRET, config.getClientSecret())
+                .add(AuthConstant.CODE, callback.getCode())
+                .add(AuthConstant.REDIRECT_URI, config.getRedirectUri())
                 .build();
-        String response;
-        try {
-            response = HttpClientUtil.doPost(url);
-        } catch (Exception e) {
-            throw new AuthException(AuthExceptionCode.REQUEST_ERROR);
-        }
+        String response = HttpClientUtil.doPost(url);
         HashMap<String, String> map = JSON.parseObject(response, HashMap.class);
         if (map.containsKey("error")) {
             throw new AuthException(map.get("error_description"));
         }
-        return AuthToken.builder().accessToken(map.get(AuthConfigConstant.ACCESS_TOKEN)).build();
+        return AuthToken.builder().accessToken(map.get(AuthConstant.ACCESS_TOKEN)).build();
     }
 
     @Override
     protected AuthUserInfo getUserInfo(AuthToken accessToken) throws AuthException {
-        String url = UrlBuilder.fromBaseUrl(source.userInfo()).add(AuthConfigConstant.ACCESS_TOKEN, accessToken.getAccessToken()).build();
-        String response;
-        try {
-            response = HttpClientUtil.doGet(url);
-        } catch (Exception e) {
-            throw new AuthException(AuthExceptionCode.REQUEST_ERROR);
-        }
+        String url = UrlBuilder.fromBaseUrl(source.userInfo()).add(AuthConstant.ACCESS_TOKEN, accessToken.getAccessToken()).build();
+        String response = HttpClientUtil.doGet(url);
         Map<String, String> userInfo = HttpClientUtil.parseResponseEntityJson(response);
         return AuthUserInfo.builder()
                 .rawUserInfo(JSON.parseObject(response))

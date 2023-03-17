@@ -1,5 +1,7 @@
 package cn.ken.auth.util;
 
+import cn.ken.auth.enums.AuthExceptionCode;
+import cn.ken.auth.exception.AuthException;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -9,6 +11,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -29,20 +32,28 @@ public class HttpClientUtil {
      * @param url 请求的路径 请求参数拼接到url后面
      * @return 响应的数据
      */
-    public static String doGet(String url) throws Exception {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet(url);
-        CloseableHttpResponse response = httpclient.execute(httpGet);
-        HttpEntity responseEntity = response.getEntity();
-        return EntityUtils.toString(responseEntity);
+    public static String doGet(String url) {
+        try {
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+            HttpGet httpGet = new HttpGet(url);
+            CloseableHttpResponse response = httpclient.execute(httpGet);
+            HttpEntity responseEntity = response.getEntity();
+            return EntityUtils.toString(responseEntity);
+        } catch (Exception e) {
+            throw new AuthException(AuthExceptionCode.REQUEST_ERROR);
+        }
     }
 
-    public static String doPost(String url) throws Exception {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(url);
-        CloseableHttpResponse response = httpclient.execute(httpPost);
-        HttpEntity responseEntity = response.getEntity();
-        return EntityUtils.toString(responseEntity);
+    public static String doPost(String url) {
+        try {
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+            HttpPost httpPost = new HttpPost(url);
+            CloseableHttpResponse response = httpclient.execute(httpPost);
+            HttpEntity responseEntity = response.getEntity();
+            return EntityUtils.toString(responseEntity);
+        } catch (Exception e) {
+            throw new AuthException(AuthExceptionCode.REQUEST_ERROR);
+        }
     }
 
     /**
@@ -52,15 +63,19 @@ public class HttpClientUtil {
      * @param headers 需要添加的请求头
      * @return 响应的数据
      */
-    public static String doGetWithHeaders(String url, Map<String, String> headers) throws Exception {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet(url);
-        for (Map.Entry<String, String> stringStringEntry : headers.entrySet()) {
-            httpGet.addHeader(stringStringEntry.getKey(), stringStringEntry.getValue());
+    public static String doGetWithHeaders(String url, Map<String, String> headers) {
+        try {
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+            HttpGet httpGet = new HttpGet(url);
+            for (Map.Entry<String, String> stringStringEntry : headers.entrySet()) {
+                httpGet.addHeader(stringStringEntry.getKey(), stringStringEntry.getValue());
+            }
+            CloseableHttpResponse response = httpclient.execute(httpGet);
+            HttpEntity responseEntity = response.getEntity();
+            return EntityUtils.toString(responseEntity);
+        } catch (Exception e) {
+            throw new AuthException(AuthExceptionCode.REQUEST_ERROR);
         }
-        CloseableHttpResponse response = httpclient.execute(httpGet);
-        HttpEntity responseEntity = response.getEntity();
-        return EntityUtils.toString(responseEntity);
     }
 
     /**

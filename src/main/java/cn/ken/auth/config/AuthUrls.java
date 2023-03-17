@@ -1,5 +1,8 @@
 package cn.ken.auth.config;
 
+import cn.ken.auth.enums.AuthExceptionCode;
+import cn.ken.auth.exception.AuthException;
+
 /**
  * <pre>
  *
@@ -30,5 +33,17 @@ public interface AuthUrls {
      * @return url
      */
     String userInfo();
+
+    /**
+     * 刷新accessToken
+     * @return url
+     */
+    default String refresh() {
+        throw new AuthException(AuthExceptionCode.NOT_IMPLEMENTED);
+    }
+    
+    default String openId() {
+        throw new AuthException(AuthExceptionCode.NOT_IMPLEMENTED);
+    }
     
 }
