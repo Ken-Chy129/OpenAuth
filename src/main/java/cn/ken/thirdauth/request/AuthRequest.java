@@ -1,11 +1,11 @@
-package cn.ken.auth.request;
+package cn.ken.thirdauth.request;
 
-import cn.ken.auth.enums.AuthExceptionCode;
-import cn.ken.auth.exception.AuthException;
-import cn.ken.auth.model.AuthCallback;
-import cn.ken.auth.model.AuthResponse;
-import cn.ken.auth.model.AuthToken;
-import cn.ken.auth.model.AuthUserInfo;
+import cn.ken.thirdauth.enums.AuthExceptionCode;
+import cn.ken.thirdauth.exception.AuthException;
+import cn.ken.thirdauth.model.AuthCallback;
+import cn.ken.thirdauth.model.AuthResponse;
+import cn.ken.thirdauth.model.AuthToken;
+import cn.ken.thirdauth.model.AuthUserInfo;
 
 /**
  * <pre>

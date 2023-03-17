@@ -1,19 +1,19 @@
-package cn.ken.auth.request;
+package cn.ken.thirdauth.request;
 
-import cn.ken.auth.cache.AuthStateCache;
-import cn.ken.auth.cache.DefaultAuthStateCache;
-import cn.ken.auth.config.AuthConstant;
-import cn.ken.auth.config.AuthPlatformConfig;
-import cn.ken.auth.config.AuthPlatformInfo;
-import cn.ken.auth.enums.AuthExceptionCode;
-import cn.ken.auth.exception.AuthException;
-import cn.ken.auth.model.AuthCallback;
-import cn.ken.auth.model.AuthResponse;
-import cn.ken.auth.model.AuthToken;
-import cn.ken.auth.model.AuthUserInfo;
-import cn.ken.auth.util.HttpClientUtil;
-import cn.ken.auth.util.UrlBuilder;
-import cn.ken.auth.util.UserInfoUtil;
+import cn.ken.thirdauth.cache.AuthStateCache;
+import cn.ken.thirdauth.cache.DefaultAuthStateCache;
+import cn.ken.thirdauth.config.AuthConstant;
+import cn.ken.thirdauth.config.AuthPlatformConfig;
+import cn.ken.thirdauth.config.AuthPlatformInfo;
+import cn.ken.thirdauth.enums.AuthExceptionCode;
+import cn.ken.thirdauth.exception.AuthException;
+import cn.ken.thirdauth.model.AuthCallback;
+import cn.ken.thirdauth.model.AuthResponse;
+import cn.ken.thirdauth.model.AuthToken;
+import cn.ken.thirdauth.model.AuthUserInfo;
+import cn.ken.thirdauth.util.HttpClientUtil;
+import cn.ken.thirdauth.util.UrlBuilder;
+import cn.ken.thirdauth.util.UserInfoUtil;
 import com.alibaba.fastjson.JSON;
 
 import java.util.Map;

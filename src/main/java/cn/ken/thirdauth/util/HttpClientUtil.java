@@ -1,7 +1,7 @@
-package cn.ken.auth.util;
+package cn.ken.thirdauth.util;
 
-import cn.ken.auth.enums.AuthExceptionCode;
-import cn.ken.auth.exception.AuthException;
+import cn.ken.thirdauth.enums.AuthExceptionCode;
+import cn.ken.thirdauth.exception.AuthException;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;

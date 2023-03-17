@@ -1,6 +1,6 @@
-package cn.ken.auth.model;
+package cn.ken.thirdauth.model;
 
-import cn.ken.auth.enums.AuthExceptionCode;
+import cn.ken.thirdauth.enums.AuthExceptionCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

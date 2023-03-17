@@ -1,16 +1,16 @@
-package cn.ken.auth.request;
+package cn.ken.thirdauth.request;
 
-import cn.ken.auth.cache.AuthStateCache;
-import cn.ken.auth.cache.DefaultAuthStateCache;
-import cn.ken.auth.config.AuthConstant;
-import cn.ken.auth.config.AuthPlatformConfig;
-import cn.ken.auth.config.AuthPlatformInfo;
-import cn.ken.auth.exception.AuthException;
-import cn.ken.auth.model.AuthCallback;
-import cn.ken.auth.model.AuthToken;
-import cn.ken.auth.model.AuthUserInfo;
-import cn.ken.auth.util.HttpClientUtil;
-import cn.ken.auth.util.UrlBuilder;
+import cn.ken.thirdauth.cache.AuthStateCache;
+import cn.ken.thirdauth.cache.DefaultAuthStateCache;
+import cn.ken.thirdauth.config.AuthConstant;
+import cn.ken.thirdauth.config.AuthPlatformConfig;
+import cn.ken.thirdauth.config.AuthPlatformInfo;
+import cn.ken.thirdauth.exception.AuthException;
+import cn.ken.thirdauth.model.AuthCallback;
+import cn.ken.thirdauth.model.AuthToken;
+import cn.ken.thirdauth.model.AuthUserInfo;
+import cn.ken.thirdauth.util.HttpClientUtil;
+import cn.ken.thirdauth.util.UrlBuilder;
 import com.alibaba.fastjson.JSON;
 
 import java.util.HashMap;
@@ -22,28 +22,29 @@ import java.util.Map;
  * </pre>
  *
  * @author <a href="https://github.com/Ken-Chy129">Ken-Chy129</a>
- * @since 2023/3/15 20:44
+ * @since 2023/3/16 17:46
  */
-public class GithubAuthRequest extends DefaultAuthRequest {
+public class GiteeAuthRequest extends DefaultAuthRequest {
 
-    public GithubAuthRequest(AuthPlatformConfig config) {
-        super(AuthPlatformInfo.GITHUB, config, DefaultAuthStateCache.INSTANCE);
+    public GiteeAuthRequest(AuthPlatformConfig config) {
+        super(AuthPlatformInfo.GITEE, config, DefaultAuthStateCache.INSTANCE);
     }
 
-    public GithubAuthRequest(AuthPlatformConfig config, AuthStateCache cache) {
-        super(AuthPlatformInfo.GITHUB, config, cache);
+    public GiteeAuthRequest(AuthPlatformConfig config, AuthStateCache cache) {
+        super(AuthPlatformInfo.GITEE, config, cache);
     }
 
     @Override
     protected AuthToken getAccessToken(AuthCallback callback) throws AuthException {
         String url = UrlBuilder.fromBaseUrl(source.accessToken())
+                .add(AuthConstant.GRANT_TYPE, AuthConstant.GrantType.ACCESS)
                 .add(AuthConstant.CLIENT_ID, config.getClientId())
                 .add(AuthConstant.CLIENT_SECRET, config.getClientSecret())
                 .add(AuthConstant.CODE, callback.getCode())
                 .add(AuthConstant.REDIRECT_URI, config.getRedirectUri())
                 .build();
-        String response = HttpClientUtil.doGet(url);
-        Map<String, String> map = HttpClientUtil.parseResponseEntity(response);
+        String response = HttpClientUtil.doPost(url);
+        HashMap<String, String> map = JSON.parseObject(response, HashMap.class);
         if (map.containsKey("error")) {
             throw new AuthException(map.get("error_description"));
         }
@@ -51,10 +52,9 @@ public class GithubAuthRequest extends DefaultAuthRequest {
     }
 
     @Override
-    protected AuthUserInfo getUserInfo(AuthToken authToken) throws AuthException {
-        Map<String, String> headers = new HashMap<>(1);
-        headers.put("Authorization", "token " + authToken.getAccessToken());
-        String response = HttpClientUtil.doGetWithHeaders(UrlBuilder.fromBaseUrl(source.userInfo()).build(), headers);
+    protected AuthUserInfo getUserInfo(AuthToken accessToken) throws AuthException {
+        String url = UrlBuilder.fromBaseUrl(source.userInfo()).add(AuthConstant.ACCESS_TOKEN, accessToken.getAccessToken()).build();
+        String response = HttpClientUtil.doGet(url);
         Map<String, String> userInfo = HttpClientUtil.parseResponseEntityJson(response);
         return AuthUserInfo.builder()
                 .rawUserInfo(JSON.parseObject(response))
@@ -64,13 +64,12 @@ public class GithubAuthRequest extends DefaultAuthRequest {
                 .blog(userInfo.get("blog"))
                 .nickname(userInfo.get("name"))
                 .company(userInfo.get("company"))
-                .location(userInfo.get("location"))
+                .location(userInfo.get("address"))
                 .email(userInfo.get("email"))
                 .remark(userInfo.get("bio"))
                 .gender(-1)
-                .token(authToken)
+                .token(accessToken)
                 .source(source.toString())
                 .build();
     }
-
 }

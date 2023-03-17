@@ -1,4 +1,4 @@
-package cn.ken.auth.model;
+package cn.ken.thirdauth.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

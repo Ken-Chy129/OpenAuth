@@ -1,4 +1,4 @@
-package cn.ken.auth.cache;
+package cn.ken.thirdauth.cache;
 
 import lombok.Data;
 

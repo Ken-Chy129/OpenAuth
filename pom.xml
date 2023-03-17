@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn.ken</groupId>
-    <artifactId>KenAuth</artifactId>
-    <version>1.0</version>
+    <artifactId>thirdauth</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

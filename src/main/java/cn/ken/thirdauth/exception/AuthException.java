@@ -1,6 +1,6 @@
-package cn.ken.auth.exception;
+package cn.ken.thirdauth.exception;
 
-import cn.ken.auth.enums.AuthExceptionCode;
+import cn.ken.thirdauth.enums.AuthExceptionCode;
 
 /**
  * <pre>

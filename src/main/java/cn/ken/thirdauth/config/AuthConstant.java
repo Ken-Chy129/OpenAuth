@@ -1,4 +1,4 @@
-package cn.ken.auth.config;
+package cn.ken.thirdauth.config;
 
 /**
  * <pre>

@@ -1,4 +1,4 @@
-package cn.ken.auth.util;
+package cn.ken.thirdauth.util;
 
 import lombok.Getter;
 

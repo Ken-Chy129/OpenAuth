@@ -1,4 +1,4 @@
-package cn.ken.auth.enums;
+package cn.ken.thirdauth.enums;
 
 /**
  * <pre>
