@@ -1,12 +1,12 @@
 package cn.ken.auth.request;
 
+import cn.ken.auth.cache.AuthStateCache;
+import cn.ken.auth.cache.DefaultAuthStateCache;
+import cn.ken.auth.config.AuthConstant;
 import cn.ken.auth.config.AuthPlatformConfig;
 import cn.ken.auth.config.AuthUrls;
 import cn.ken.auth.enums.AuthExceptionCode;
 import cn.ken.auth.exception.AuthException;
-import cn.ken.auth.cache.AuthStateCache;
-import cn.ken.auth.cache.DefaultAuthStateCache;
-import cn.ken.auth.config.AuthConstant;
 import cn.ken.auth.model.AuthCallback;
 import cn.ken.auth.model.AuthResponse;
 import cn.ken.auth.model.AuthToken;
@@ -32,7 +32,7 @@ public abstract class DefaultAuthRequest implements AuthRequest {
     public DefaultAuthRequest(AuthPlatformConfig config, AuthUrls source) {
         this(source, config, DefaultAuthStateCache.INSTANCE);
     }
-    
+
     public DefaultAuthRequest(AuthUrls source, AuthPlatformConfig config, AuthStateCache cache) {
         this.source = source;
         this.config = config;

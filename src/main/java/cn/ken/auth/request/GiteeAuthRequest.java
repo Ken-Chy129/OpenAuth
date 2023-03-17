@@ -2,16 +2,15 @@ package cn.ken.auth.request;
 
 import cn.ken.auth.cache.AuthStateCache;
 import cn.ken.auth.cache.DefaultAuthStateCache;
+import cn.ken.auth.config.AuthConstant;
 import cn.ken.auth.config.AuthPlatformConfig;
 import cn.ken.auth.config.AuthPlatformInfo;
-import cn.ken.auth.enums.AuthExceptionCode;
 import cn.ken.auth.exception.AuthException;
+import cn.ken.auth.model.AuthCallback;
+import cn.ken.auth.model.AuthToken;
 import cn.ken.auth.model.AuthUserInfo;
 import cn.ken.auth.util.HttpClientUtil;
 import cn.ken.auth.util.UrlBuilder;
-import cn.ken.auth.config.AuthConstant;
-import cn.ken.auth.model.AuthCallback;
-import cn.ken.auth.model.AuthToken;
 import com.alibaba.fastjson.JSON;
 
 import java.util.HashMap;
@@ -30,7 +29,7 @@ public class GiteeAuthRequest extends DefaultAuthRequest {
     public GiteeAuthRequest(AuthPlatformConfig config) {
         super(AuthPlatformInfo.GITEE, config, DefaultAuthStateCache.INSTANCE);
     }
-    
+
     public GiteeAuthRequest(AuthPlatformConfig config, AuthStateCache cache) {
         super(AuthPlatformInfo.GITEE, config, cache);
     }

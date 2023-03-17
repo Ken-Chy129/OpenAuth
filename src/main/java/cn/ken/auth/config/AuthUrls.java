@@ -36,14 +36,15 @@ public interface AuthUrls {
 
     /**
      * 刷新accessToken
+     *
      * @return url
      */
     default String refresh() {
         throw new AuthException(AuthExceptionCode.NOT_IMPLEMENTED);
     }
-    
+
     default String openId() {
         throw new AuthException(AuthExceptionCode.NOT_IMPLEMENTED);
     }
-    
+
 }

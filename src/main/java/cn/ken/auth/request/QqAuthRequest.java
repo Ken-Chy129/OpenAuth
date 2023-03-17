@@ -15,7 +15,6 @@ import cn.ken.auth.util.HttpClientUtil;
 import cn.ken.auth.util.UrlBuilder;
 import cn.ken.auth.util.UserInfoUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 
 import java.util.Map;
 
@@ -39,7 +38,7 @@ public class QqAuthRequest extends DefaultAuthRequest {
 
     @Override
     public void checkState(String state) {
-        
+
     }
 
     @Override

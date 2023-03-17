@@ -20,7 +20,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthToken implements Serializable {
-    
+
     private String accessToken;
     private int expireIn;
     private String refreshToken;
@@ -29,5 +29,5 @@ public class AuthToken implements Serializable {
     private String openId;
     private String accessCode;
     private String unionId;
-    
+
 }

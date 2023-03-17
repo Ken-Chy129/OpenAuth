@@ -1,7 +1,10 @@
 package cn.ken.auth.model;
 
 import cn.ken.auth.enums.AuthExceptionCode;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -33,7 +36,7 @@ public class AuthResponse<T> implements Serializable {
      * 授权响应数据，当且仅当 code = 200 时返回
      */
     private T data;
-    
+
     public AuthResponse<T> exceptionStatus(AuthExceptionCode exceptionCode) {
         this.code = exceptionCode.getCode();
         this.msg = exceptionCode.getMsg();

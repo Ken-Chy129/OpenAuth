@@ -1,7 +1,10 @@
 package cn.ken.auth.model;
 
 import com.alibaba.fastjson.JSONObject;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 

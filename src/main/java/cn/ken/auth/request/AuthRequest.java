@@ -19,6 +19,7 @@ public interface AuthRequest {
 
     /**
      * 返回带state的授权url,授权回调时会带上这个state
+     *
      * @param state 验证授权流程的参数，可以防止csrf
      * @return 返回授权地址
      */
@@ -36,6 +37,7 @@ public interface AuthRequest {
 
     /**
      * 第三方登录
+     *
      * @param authCallback 用于接收回调参数的实体
      * @return 返回登录成功后的用户信息
      */
@@ -45,6 +47,7 @@ public interface AuthRequest {
 
     /**
      * 撤销授权
+     *
      * @param authToken 登录成功后返回的Token信息
      * @return AuthResponse
      */
@@ -54,6 +57,7 @@ public interface AuthRequest {
 
     /**
      * 刷新access token （续期）
+     *
      * @param authToken 登录成功后返回的Token信息
      * @return AuthResponse
      */

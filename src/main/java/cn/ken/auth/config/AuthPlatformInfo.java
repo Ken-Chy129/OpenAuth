@@ -26,7 +26,7 @@ public enum AuthPlatformInfo implements AuthUrls {
             return "https://api.github.com/user";
         }
     },
-    
+
     GITEE {
         @Override
         public String authorize() {
@@ -64,7 +64,7 @@ public enum AuthPlatformInfo implements AuthUrls {
         public String refresh() {
             return "https://graph.qq.com/oauth2.0/token";
         }
-        
+
         public String openId() {
             return "https://graph.qq.com/oauth2.0/me";
         }

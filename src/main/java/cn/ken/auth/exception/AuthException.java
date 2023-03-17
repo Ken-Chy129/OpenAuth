@@ -11,9 +11,9 @@ import cn.ken.auth.enums.AuthExceptionCode;
  * @since 2023/3/15 17:24
  */
 public class AuthException extends RuntimeException {
-    
+
     private int code;
-    
+
     private String msg;
 
     public AuthException(String msg) {
@@ -23,7 +23,7 @@ public class AuthException extends RuntimeException {
     public AuthException(AuthExceptionCode status) {
         this(status.getCode(), status.getMsg());
     }
-    
+
     public AuthException(int code, String msg) {
         super(msg);
         this.code = code;

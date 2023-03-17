@@ -1,7 +1,5 @@
 package cn.ken.auth.util;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -15,7 +13,7 @@ import java.util.Arrays;
  * @since 2023/3/17 15:38
  */
 public class UserInfoUtil {
-    
+
     @Getter
     public enum UserGender {
         MALE(1, "男"),
