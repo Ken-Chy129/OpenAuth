@@ -1,11 +1,6 @@
 package cn.ken.thirdauth.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
+import lombok.*;
 
 /**
  * <pre>
@@ -19,15 +14,18 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthToken implements Serializable {
+public class AuthToken {
 
     private String accessToken;
     private int expireIn;
     private String refreshToken;
+    private String scope;
     private int refreshTokenExpireIn;
     private String uid;
     private String openId;
     private String accessCode;
     private String unionId;
+    private String sessionKey;
+    private String sessionSecret;
 
 }

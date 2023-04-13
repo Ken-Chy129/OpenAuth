@@ -37,6 +37,10 @@ public class AuthUserInfo implements Serializable {
      */
     private String nickname;
     /**
+     * 手机号码
+     */
+    private String mobilePhone;
+    /**
      * 用户头像
      */
     private String avatar;
@@ -71,7 +75,7 @@ public class AuthUserInfo implements Serializable {
     /**
      * 用户授权的token信息
      */
-    private String token;
+    private AuthToken token;
     /**
      * 第三方平台返回的原始用户信息
      */
