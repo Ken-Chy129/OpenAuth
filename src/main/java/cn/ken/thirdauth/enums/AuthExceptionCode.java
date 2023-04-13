@@ -24,6 +24,7 @@ public enum AuthExceptionCode {
     ILLEGAL_STATUS(5009, "Illegal state"),
     REQUIRED_REFRESH_TOKEN(5010, "The refresh token is required; it must not be null"),
     ILLEGAL_TOKEN(5011, "Invalid token"),
+    UNDEFINE_USERID(5012, "Authorized user is not set so that the state cannot be associated."),
     ;
 
     private final int code;

@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * <pre>
- *
+ * 开放平台配置类
  * </pre>
  *
  * @author <a href="https://github.com/Ken-Chy129">Ken-Chy129</a>

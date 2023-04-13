@@ -1,6 +1,13 @@
 package cn.ken.thirdauth.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
+
+
+
 
 /**
  * <pre>
@@ -10,6 +17,9 @@ import java.io.Serializable;
  * @author <a href="https://github.com/Ken-Chy129">Ken-Chy129</a>
  * @since 2023/3/15 17:34
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuthCallback implements Serializable {
 
     /**
@@ -18,31 +28,8 @@ public class AuthCallback implements Serializable {
     private String code;
 
     /**
-     * 访问AuthorizeUrl后回调时带的参数state，用于和请求AuthorizeUrl前的state比较，防止CSRF攻击
+     * 访问AuthorizeUrl后回调时带的参数state，用于鉴定请求者的身份，防止CSRF攻击
      */
     private String state;
 
-    public AuthCallback() {
-    }
-
-    public AuthCallback(String code, String state) {
-        this.code = code;
-        this.state = state;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
 }

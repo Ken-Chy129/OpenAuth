@@ -27,7 +27,9 @@ public class UrlBuilder {
     }
 
     public UrlBuilder add(String key, String value) {
-        this.params.put(key, value);
+        if (value != null) {
+            this.params.put(key, value);
+        }
         return this;
     }
 

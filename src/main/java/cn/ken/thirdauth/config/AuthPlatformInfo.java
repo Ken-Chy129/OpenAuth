@@ -2,7 +2,7 @@ package cn.ken.thirdauth.config;
 
 /**
  * <pre>
- *
+ * 开放平台的枚举，实现获取API地址的接口
  * </pre>
  *
  * @author <a href="https://github.com/Ken-Chy129">Ken-Chy129</a>
@@ -65,6 +65,7 @@ public enum AuthPlatformInfo implements AuthUrls {
             return "https://graph.qq.com/oauth2.0/token";
         }
 
+        @Override
         public String openId() {
             return "https://graph.qq.com/oauth2.0/me";
         }

@@ -9,7 +9,7 @@ import cn.ken.thirdauth.model.AuthUserInfo;
 
 /**
  * <pre>
- * 默认请求接口，所有三方平台请求都需要实现该接口
+ * 默认请求接口，所有开放平台请求都需要实现该接口
  * </pre>
  *
  * @author <a href="https://github.com/Ken-Chy129">Ken-Chy129</a>
@@ -18,50 +18,64 @@ import cn.ken.thirdauth.model.AuthUserInfo;
 public interface AuthRequest {
 
     /**
-     * 返回带state的授权url,授权回调时会带上这个state
-     *
-     * @param state 验证授权流程的参数，可以防止csrf
-     * @return 返回授权地址
+     * 获取开放平台的授权地址（不携带state）<br>
+     * 一般用于注册或者已授权的用户进行登录
+     * 
+     * @return 开放平台的授权地址
      */
-    default String authorize(String state) {
-        throw new AuthException(AuthExceptionCode.NOT_IMPLEMENTED);
-    }
-
-    default String putState(String state) {
-        throw new AuthException(AuthExceptionCode.NOT_IMPLEMENTED);
-    }
-
-    default void checkState(String state) {
-        throw new AuthException(AuthExceptionCode.NOT_IMPLEMENTED);
-    }
+    String authorizeUrl();
 
     /**
-     * 第三方登录
-     *
-     * @param authCallback 用于接收回调参数的实体
-     * @return 返回登录成功后的用户信息
+     * 获取开放平台的授权地址（携带state）<br>
+     * 一般用于已经登录的用户授权关联开放平台，携带state以防止csrf攻击
+     * 
+     * @param authorizer 授权者唯一标识，用于与state相关联
+     * @return 开放平台的授权地址
      */
-    default AuthResponse<AuthUserInfo> login(AuthCallback authCallback) {
-        throw new AuthException(AuthExceptionCode.NOT_IMPLEMENTED);
-    }
+    String authorizeUrl(String authorizer);
 
     /**
-     * 撤销授权
+     * 通过授权码获取用户令牌，无需校验state
+     * 
+     * @param callback 用于接收回调参数的实体(包括授权码和state等）
+     * @return 用户访问令牌
+     */
+    AuthResponse<AuthToken> getAccessToken(AuthCallback callback);
+
+    /**
+     * 通过授权码获取用户令牌，需校验state
+     * 
+     * @param authorizer 授权者唯一标识
+     * @param callback 用于接收回调参数的实体(包括授权码和state等）
+     * @return 用户访问令牌
+     */
+    AuthResponse<AuthToken> getAccessToken(String authorizer, AuthCallback callback);
+    
+    /**
+     * 根据用户访问令牌获取用户信息
+     *
+     * @param accessToken 用户访问令牌
+     * @return 用户信息
+     */
+    AuthResponse<AuthUserInfo> getUserInfo(String accessToken);
+
+    /**
+     * 撤销授权，非必要实现
      *
      * @param authToken 登录成功后返回的Token信息
-     * @return AuthResponse
+     * @return 是否撤销成功
      */
-    default AuthResponse revoke(AuthToken authToken) {
+    default AuthResponse<Boolean> revoke(AuthToken authToken) {
         throw new AuthException(AuthExceptionCode.NOT_IMPLEMENTED);
     }
 
     /**
-     * 刷新access token （续期）
+     * 刷新access token（续期），非必要实现
      *
      * @param authToken 登录成功后返回的Token信息
-     * @return AuthResponse
+     * @return 用户访问令牌 
      */
-    default AuthResponse refresh(AuthToken authToken) {
+    default AuthResponse<AuthToken> refresh(AuthToken authToken) {
         throw new AuthException(AuthExceptionCode.NOT_IMPLEMENTED);
     }
 }

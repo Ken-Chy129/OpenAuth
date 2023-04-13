@@ -37,9 +37,10 @@ public class AuthResponse<T> implements Serializable {
      */
     private T data;
 
-    public AuthResponse<T> exceptionStatus(AuthExceptionCode exceptionCode) {
+    public AuthResponse<T> exceptionStatus(AuthExceptionCode exceptionCode, T data) {
         this.code = exceptionCode.getCode();
         this.msg = exceptionCode.getMsg();
+        this.data = data;
         return this;
     }
 }
