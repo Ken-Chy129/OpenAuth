@@ -56,13 +56,13 @@ public class UrlBuilder {
         return UrlBuilder.fromBaseUrl(source.accessToken())
                 .add(AuthConstant.CLIENT_ID, config.getClientId())
                 .add(AuthConstant.CLIENT_SECRET, config.getClientSecret())
-                .add(AuthConstant.CODE, code)
+                .add(AuthConstant.Token.CODE, code)
                 .add(AuthConstant.REDIRECT_URI, config.getRedirectUri())
-                .add(AuthConstant.GRANT_TYPE, "authorization_code");
+                .add(AuthConstant.Token.GRANT_TYPE, AuthConstant.GrantType.ACCESS);
     }
 
     public static UrlBuilder baseUserInfoUrlBuilder(AuthUrls source, String accessToken) {
         return UrlBuilder.fromBaseUrl(source.userInfo())
-                .add(AuthConstant.ACCESS_TOKEN, accessToken);
+                .add(AuthConstant.Token.ACCESS_TOKEN, accessToken);
     }
 }
