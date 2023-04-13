@@ -2,6 +2,7 @@ package cn.ken.thirdauth.util;
 
 import cn.ken.thirdauth.enums.AuthExceptionCode;
 import cn.ken.thirdauth.exception.AuthException;
+import cn.ken.thirdauth.model.AuthGet;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -52,6 +53,14 @@ public class HttpClientUtil {
             return EntityUtils.toString(responseEntity);
         } catch (Exception e) {
             throw new AuthException(AuthExceptionCode.REQUEST_ERROR);
+        }
+    }
+    
+    public static String doAuthGet(AuthGet authGet) {
+        if (authGet.getHeaders() != null) {
+            return doGetWithHeaders(authGet.getUrl(), authGet.getHeaders());
+        } else {
+            return doGet(authGet.getUrl());
         }
     }
 
