@@ -17,7 +17,6 @@ import com.alibaba.fastjson.JSON;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 /**
  * <pre>
@@ -28,8 +27,6 @@ import java.util.logging.Logger;
  * @since 2023/3/15 18:50
  */
 public abstract class DefaultAuthRequest implements AuthRequest {
-    
-    static Logger logger = Logger.getLogger(DefaultAuthRequest.class.getName());
     
     protected final AuthUrls source;
 
@@ -77,8 +74,9 @@ public abstract class DefaultAuthRequest implements AuthRequest {
 
     /**
      * 根据userId校验state是否合法，即判断是否是当前用户执行的操作，如果不合法则抛出异常
+     *
      * @param authorizer 当前操作的用户的唯一标识
-     * @param state 调用该操作时传入的身份证明，可以在开放平台确认授权后的回调地址参数中拿到
+     * @param state      调用该操作时传入的身份证明，可以在开放平台确认授权后的回调地址参数中拿到
      */
     protected void checkState(String authorizer, String state) {
         if (state == null || state.isBlank() || cache.get(authorizer).equals(state)) {
@@ -131,7 +129,7 @@ public abstract class DefaultAuthRequest implements AuthRequest {
             return new AuthResponse<>(e.getCode(), e.getMsg(), null);
         }
     }
-    
+
     protected void dealWithResponseException(Map<String, String> responseMap) {
         if (responseMap.containsKey("error")) {
             throw new AuthException(responseMap.get("error_description"));
@@ -140,7 +138,7 @@ public abstract class DefaultAuthRequest implements AuthRequest {
 
     /**
      * 通过授权码生成请求令牌的url
-     * 
+     *
      * @param code 授权码
      * @return 请求令牌的url
      */
@@ -151,7 +149,7 @@ public abstract class DefaultAuthRequest implements AuthRequest {
                 .add(AuthConstant.CODE, code)
                 .add(AuthConstant.REDIRECT_URI, config.getRedirectUri());
     }
-    
+
     protected AuthToken setAuthToken(Map<String, String> responseMap) {
         return AuthToken.builder()
                 .accessToken(responseMap.get(AuthConstant.ACCESS_TOKEN))
@@ -171,7 +169,7 @@ public abstract class DefaultAuthRequest implements AuthRequest {
 
     /**
      * 请求用户信息时携带的请求头，默认访问令牌拼接在请求路径中，请求头为空
-     * 
+     *
      * @param accessToken 访问令牌
      * @return 发送获取用户信息请求时携带的请求头
      */
@@ -181,7 +179,7 @@ public abstract class DefaultAuthRequest implements AuthRequest {
 
     /**
      * 根据不同开放平台响应结果的不同封装AuthUserInfo
-     * 
+     *
      * @param responseMap 原始响应体的键值对
      * @return 封装后的AuthUserInfo对象
      */
