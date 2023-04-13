@@ -29,8 +29,13 @@ public class GiteeAuthRequest extends DefaultAuthRequest {
     }
 
     @Override
-    protected UrlBuilder accessTokenUrlBuilder(String code) {
-        return super.accessTokenUrlBuilder(code).add(AuthConstant.GRANT_TYPE, AuthConstant.GrantType.ACCESS);
+    protected String getAccessTokenUrl(String code) {
+        return UrlBuilder.baseAccessTokenBuilder(source, config, code).build();
+    }
+
+    @Override
+    protected String getUserInfoUrl(String accessToken) {
+        return UrlBuilder.baseUserInfoUrlBuilder(source, accessToken).build();
     }
 
     @Override

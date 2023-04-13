@@ -5,6 +5,7 @@ import cn.ken.thirdauth.cache.DefaultAuthStateCache;
 import cn.ken.thirdauth.config.AuthPlatformConfig;
 import cn.ken.thirdauth.config.AuthPlatformInfo;
 import cn.ken.thirdauth.model.AuthUserInfo;
+import cn.ken.thirdauth.util.UrlBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +26,16 @@ public class GithubAuthRequest extends DefaultAuthRequest {
 
     public GithubAuthRequest(AuthPlatformConfig config, AuthStateCache cache) {
         super(AuthPlatformInfo.GITHUB, config, cache);
+    }
+
+    @Override
+    protected String getAccessTokenUrl(String code) {
+        return UrlBuilder.baseAccessTokenBuilder(source, config, code).build();
+    }
+
+    @Override
+    protected String getUserInfoUrl(String accessToken) {
+        return UrlBuilder.baseUserInfoUrlBuilder(source, accessToken).build();
     }
 
     @Override

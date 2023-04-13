@@ -1,5 +1,9 @@
 package cn.ken.thirdauth.util;
 
+import cn.ken.thirdauth.config.AuthConstant;
+import cn.ken.thirdauth.config.AuthPlatformConfig;
+import cn.ken.thirdauth.config.AuthUrls;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,5 +50,19 @@ public class UrlBuilder {
         }
         String url = baseUrl.toString();
         return url.substring(0, url.length() - 1);
+    }
+    
+    public static UrlBuilder baseAccessTokenBuilder(AuthUrls source, AuthPlatformConfig config, String code) {
+        return UrlBuilder.fromBaseUrl(source.accessToken())
+                .add(AuthConstant.CLIENT_ID, config.getClientId())
+                .add(AuthConstant.CLIENT_SECRET, config.getClientSecret())
+                .add(AuthConstant.CODE, code)
+                .add(AuthConstant.REDIRECT_URI, config.getRedirectUri())
+                .add(AuthConstant.GRANT_TYPE, "authorization_code");
+    }
+
+    public static UrlBuilder baseUserInfoUrlBuilder(AuthUrls source, String accessToken) {
+        return UrlBuilder.fromBaseUrl(source.userInfo())
+                .add(AuthConstant.ACCESS_TOKEN, accessToken);
     }
 }

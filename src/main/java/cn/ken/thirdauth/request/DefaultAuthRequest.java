@@ -97,7 +97,7 @@ public abstract class DefaultAuthRequest implements AuthRequest {
                 checkState(authorizer, callback.getState());
             }
             // 根据不同平台的参数需求不同，可选择重写生成请求路径的策略
-            String url = accessTokenUrlBuilder(callback.getCode()).build();
+            String url = getAccessTokenUrl(callback.getCode());
             String response = HttpClientUtil.doGet(url);
             Map<String, String> responseMap = HttpClientUtil.parseResponseEntity(response);
             // 请求发送错误时不同平台响应不同，故委托给使用者实现，如果有错误则抛出异常
@@ -115,9 +115,9 @@ public abstract class DefaultAuthRequest implements AuthRequest {
         try {
             String response;
             if (setUserInfoHeaders(accessToken) == null) {
-                response = HttpClientUtil.doGet(userInfoUrlBuilder(accessToken).build());
+                response = HttpClientUtil.doGet(getUserInfoUrl(accessToken));
             } else {
-                response = HttpClientUtil.doGetWithHeaders(userInfoUrlBuilder(accessToken).build(), setUserInfoHeaders(accessToken));
+                response = HttpClientUtil.doGetWithHeaders(getUserInfoUrl(accessToken), setUserInfoHeaders(accessToken));
             }
             Map<String, String> responseMap = HttpClientUtil.parseResponseEntityJson(response);
             dealWithResponseException(responseMap);
@@ -142,13 +142,7 @@ public abstract class DefaultAuthRequest implements AuthRequest {
      * @param code 授权码
      * @return 请求令牌的url
      */
-    protected UrlBuilder accessTokenUrlBuilder(String code) {
-        return UrlBuilder.fromBaseUrl(source.accessToken())
-                .add(AuthConstant.CLIENT_ID, config.getClientId())
-                .add(AuthConstant.CLIENT_SECRET, config.getClientSecret())
-                .add(AuthConstant.CODE, code)
-                .add(AuthConstant.REDIRECT_URI, config.getRedirectUri());
-    }
+    protected abstract String getAccessTokenUrl(String code);
 
     protected AuthToken setAuthToken(Map<String, String> responseMap) {
         return AuthToken.builder()
@@ -163,9 +157,7 @@ public abstract class DefaultAuthRequest implements AuthRequest {
      * @param accessToken 访问令牌
      * @return 请求用户信息的url
      */
-    protected UrlBuilder userInfoUrlBuilder(String accessToken) {
-        return UrlBuilder.fromBaseUrl(source.userInfo()).add(AuthConstant.ACCESS_TOKEN, accessToken);
-    }
+    protected abstract String getUserInfoUrl(String accessToken);
 
     /**
      * 请求用户信息时携带的请求头，默认访问令牌拼接在请求路径中，请求头为空

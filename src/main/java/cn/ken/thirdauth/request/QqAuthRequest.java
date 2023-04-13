@@ -36,12 +36,17 @@ public class QqAuthRequest extends DefaultAuthRequest {
     }
 
     @Override
-    protected UrlBuilder accessTokenUrlBuilder(String accessToken) {
-        String openId = getOpenId(accessToken);
+    protected String getAccessTokenUrl(String code) {
+        String openId = getOpenId(code);
         return UrlBuilder.fromBaseUrl(source.userInfo())
-                .add(AuthConstant.ACCESS_TOKEN, accessToken)
+                .add(AuthConstant.ACCESS_TOKEN, code)
                 .add("oauth_consumer_key", config.getClientId())
-                .add("openid", openId);
+                .add("openid", openId).build();
+    }
+
+    @Override
+    protected String getUserInfoUrl(String accessToken) {
+        return UrlBuilder.baseUserInfoUrlBuilder(source, accessToken).build();
     }
 
     @Override
