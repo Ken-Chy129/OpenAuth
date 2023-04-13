@@ -51,14 +51,22 @@ public class UrlBuilder {
         String url = baseUrl.toString();
         return url.substring(0, url.length() - 1);
     }
-    
+
     public static UrlBuilder baseAccessTokenBuilder(AuthUrls source, AuthPlatformConfig config, String code) {
         return UrlBuilder.fromBaseUrl(source.accessToken())
+                .add(AuthConstant.Token.GRANT_TYPE, AuthConstant.GrantType.ACCESS)
                 .add(AuthConstant.CLIENT_ID, config.getClientId())
                 .add(AuthConstant.CLIENT_SECRET, config.getClientSecret())
                 .add(AuthConstant.Token.CODE, code)
-                .add(AuthConstant.REDIRECT_URI, config.getRedirectUri())
-                .add(AuthConstant.Token.GRANT_TYPE, AuthConstant.GrantType.ACCESS);
+                .add(AuthConstant.REDIRECT_URI, config.getRedirectUri());
+    }
+
+    public static UrlBuilder baseRefreshTokenBuilder(AuthUrls source, AuthPlatformConfig config, String refreshToken) {
+        return UrlBuilder.fromBaseUrl(source.refresh())
+                .add(AuthConstant.Token.GRANT_TYPE, AuthConstant.GrantType.REFRESH)
+                .add(AuthConstant.Token.REFRESH_TOKEN, refreshToken)
+                .add(AuthConstant.CLIENT_ID, config.getClientId())
+                .add(AuthConstant.CLIENT_SECRET, config.getClientSecret());
     }
 
     public static UrlBuilder baseUserInfoUrlBuilder(AuthUrls source, String accessToken) {

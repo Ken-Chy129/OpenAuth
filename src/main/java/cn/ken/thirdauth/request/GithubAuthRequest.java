@@ -4,6 +4,8 @@ import cn.ken.thirdauth.cache.AuthStateCache;
 import cn.ken.thirdauth.cache.DefaultAuthStateCache;
 import cn.ken.thirdauth.config.AuthPlatformConfig;
 import cn.ken.thirdauth.config.AuthPlatformInfo;
+import cn.ken.thirdauth.model.AuthGet;
+import cn.ken.thirdauth.model.AuthToken;
 import cn.ken.thirdauth.model.AuthUserInfo;
 import cn.ken.thirdauth.util.UrlBuilder;
 
@@ -29,24 +31,25 @@ public class GithubAuthRequest extends DefaultAuthRequest {
     }
 
     @Override
-    protected String getAccessTokenUrl(String code) {
-        return UrlBuilder.baseAccessTokenBuilder(source, config, code).build();
+    protected AuthGet generateAccessTokenRequest(String code) {
+        return new AuthGet(
+                UrlBuilder.baseAccessTokenBuilder(source, config, code).build(),
+                null
+        );
     }
 
     @Override
-    protected String getUserInfoUrl(String accessToken) {
-        return UrlBuilder.baseUserInfoUrlBuilder(source, accessToken).build();
-    }
-
-    @Override
-    protected Map<String, String> setUserInfoHeaders(String accessToken) {
+    protected AuthGet generateUserInfoRequest(AuthToken authToken) {
         Map<String, String> headers = new HashMap<>(1);
-        headers.put("Authorization", "token " + accessToken);
-        return headers;
+        headers.put("Authorization", "token " + authToken.getAccessToken());
+        return new AuthGet(
+                UrlBuilder.baseUserInfoUrlBuilder(source, authToken.getAccessToken()).build(),
+                headers
+        );
     }
 
     @Override
-    protected AuthUserInfo setUserInfo(Map<String, String> responseMap) {
+    protected AuthUserInfo parseUserInfo(Map<String, String> responseMap) {
         return AuthUserInfo.builder()
                 .uuid(responseMap.get("id"))
                 .username(responseMap.get("getUserInfo"))

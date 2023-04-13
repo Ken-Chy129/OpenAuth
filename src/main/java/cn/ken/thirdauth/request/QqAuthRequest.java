@@ -5,15 +5,13 @@ import cn.ken.thirdauth.cache.DefaultAuthStateCache;
 import cn.ken.thirdauth.config.AuthConstant;
 import cn.ken.thirdauth.config.AuthPlatformConfig;
 import cn.ken.thirdauth.config.AuthPlatformInfo;
-import cn.ken.thirdauth.enums.AuthExceptionCode;
 import cn.ken.thirdauth.exception.AuthException;
-import cn.ken.thirdauth.model.AuthResponse;
+import cn.ken.thirdauth.model.AuthGet;
 import cn.ken.thirdauth.model.AuthToken;
 import cn.ken.thirdauth.model.AuthUserInfo;
 import cn.ken.thirdauth.util.HttpClientUtil;
 import cn.ken.thirdauth.util.UrlBuilder;
 import cn.ken.thirdauth.util.UserInfoUtil;
-import com.alibaba.fastjson.JSON;
 
 import java.util.Map;
 
@@ -36,80 +34,70 @@ public class QqAuthRequest extends DefaultAuthRequest {
     }
 
     @Override
-    protected String getAccessTokenUrl(String code) {
-        String openId = getOpenId(code);
-        return UrlBuilder.fromBaseUrl(source.userInfo())
-                .add(AuthConstant.ACCESS_TOKEN, code)
-                .add("oauth_consumer_key", config.getClientId())
-                .add("openid", openId).build();
+    protected AuthGet generateAccessTokenRequest(String code) {
+        return new AuthGet(
+                UrlBuilder.baseAccessTokenBuilder(source, config, code).build(),
+                null
+        );
     }
 
     @Override
-    protected String getUserInfoUrl(String accessToken) {
-        return UrlBuilder.baseUserInfoUrlBuilder(source, accessToken).build();
+    protected AuthGet generateUserInfoRequest(AuthToken authToken) {
+        return new AuthGet(
+                UrlBuilder.fromBaseUrl(source.userInfo())
+                        .add(AuthConstant.Token.ACCESS_TOKEN, authToken.getAccessToken())
+                        .add("oauth_consumer_key", config.getClientId())
+                        .add("openid", authToken.getOpenId()).build(),
+                null
+        );
     }
 
     @Override
-    public AuthResponse<AuthUserInfo> getUserInfo(String accessToken) throws AuthException {
-        String openId = getOpenId(accessToken);
-        String url = UrlBuilder.fromBaseUrl(source.userInfo())
-                .add(AuthConstant.ACCESS_TOKEN, accessToken)
-                .add("oauth_consumer_key", config.getClientId())
-                .add("openid", openId)
-                .build();
-        String response = HttpClientUtil.doGet(url);
-        Map<String, String> map = HttpClientUtil.parseResponseEntityJson(response);
-        if (Integer.parseInt(map.get("ret")) != 0) {
-            throw new AuthException(map.get("msg"));
+    protected AuthGet generateRefreshRequest(AuthToken authToken) {
+        return new AuthGet(
+                UrlBuilder.baseRefreshTokenBuilder(source, config, authToken.getRefreshToken())
+                        .add(AuthConstant.REDIRECT_URI, config.getRedirectUri())
+                        .build(),
+                null
+        );
+    }
+
+    @Override
+    protected void parseResponseException(Map<String, String> responseMap) {
+        if (Integer.parseInt(responseMap.get("ret")) != 0) {
+            throw new AuthException(Integer.parseInt(responseMap.get("ret")), responseMap.get("msg"));
         }
-        String avatar = map.get("figureurl_qq_2");
+        if (responseMap.containsKey("code")) {
+            throw new AuthException(Integer.parseInt(responseMap.get("code")), responseMap.get("msg"));
+        }
+    }
+
+    @Override
+    protected AuthUserInfo parseUserInfo(Map<String, String> responseMap) {
+        String avatar = responseMap.get("figureurl_qq_2");
         if (avatar == null || avatar.isEmpty()) {
-            avatar = map.get("figureurl_qq_1");
+            avatar = responseMap.get("figureurl_qq_1");
         }
-        String location = String.format("%s-%s", map.get("province"), map.get("city"));
-        AuthUserInfo userInfo = AuthUserInfo.builder()
-                .rawUserInfo(JSON.parseObject(response))
-                .token(accessToken)
-                .username(map.get("nickname"))
-                .nickname(map.get("nickname"))
+        String location = String.format("%s-%s", responseMap.get("province"), responseMap.get("city"));
+        return AuthUserInfo.builder()
+                .username(responseMap.get("nickname"))
+                .nickname(responseMap.get("nickname"))
                 .avatar(avatar)
                 .location(location)
-                .uuid(openId)
-                .gender(UserInfoUtil.getRealGender(map.get("gender")).getCode())
+                .uuid(responseMap.get("openid"))
+                .gender(UserInfoUtil.getRealGender(responseMap.get("gender")).getCode())
                 .source(source.toString())
                 .build();
-        return new AuthResponse<AuthUserInfo>().exceptionStatus(AuthExceptionCode.SUCCESS, userInfo);
-    }
-    
-    @Override
-    public AuthResponse<AuthToken> refresh(AuthToken authToken) {
-        String url = UrlBuilder.fromBaseUrl(source.refresh())
-                .add(AuthConstant.GRANT_TYPE, AuthConstant.GrantType.REFRESH)
-                .add(AuthConstant.CLIENT_ID, config.getClientId())
-                .add(AuthConstant.CLIENT_SECRET, config.getClientSecret())
-                .add(AuthConstant.REFRESH_TOKEN, authToken.getRefreshToken())
-                .add(AuthConstant.REDIRECT_URI, config.getRedirectUri())
-                .build();
-        String response = HttpClientUtil.doGet(url);
-        Map<String, String> map = HttpClientUtil.parseResponseEntity(response);
-        if (!map.containsKey(AuthConstant.ACCESS_TOKEN) || map.containsKey(AuthConstant.CODE)) {
-            throw new AuthException(map.get("msg"));
-        }
-        AuthToken newAuthToken = AuthToken.builder()
-                .accessToken(map.get(AuthConstant.ACCESS_TOKEN))
-                .expireIn(Integer.parseInt(map.getOrDefault(AuthConstant.EXPIRE, "0")))
-                .refreshToken(map.get(AuthConstant.REFRESH_TOKEN))
-                .build();
-        return new AuthResponse<>(AuthExceptionCode.SUCCESS.getCode(), AuthExceptionCode.SUCCESS.getMsg(), newAuthToken);
     }
 
-    private String getOpenId(String accessToken) throws AuthException {
-        String url = UrlBuilder.fromBaseUrl(source.openId()).add(AuthConstant.ACCESS_TOKEN, accessToken).add("fmt", "json").build();
+    @Override
+    protected void setOpenId(AuthToken authToken) throws AuthException {
+        String url = UrlBuilder.fromBaseUrl(source.openId()).add(AuthConstant.Token.ACCESS_TOKEN, authToken.getAccessToken()).add("fmt", "json").build();
         String response = HttpClientUtil.doGet(url);
         Map<String, String> map = HttpClientUtil.parseResponseEntityJson(response);
         if (map.containsKey("code")) {
             throw new AuthException(map.get("msg"));
         }
-        return map.get("openid");
+        authToken.setOpenId(map.get("openid"));
     }
 }

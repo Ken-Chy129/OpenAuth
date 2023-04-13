@@ -70,5 +70,27 @@ public enum AuthPlatformInfo implements AuthUrls {
             return "https://graph.qq.com/oauth2.0/me";
         }
 
+    },
+    
+    BAIDU {
+        @Override
+        public String authorize() {
+            return "https://openapi.baidu.com/oauth/2.0/authorize";
+        }
+
+        @Override
+        public String accessToken() {
+            return "https://openapi.baidu.com/oauth/2.0/token";
+        }
+
+        @Override
+        public String userInfo() {
+            return "https://openapi.baidu.com/rest/2.0/passport/users/getInfo";
+        }
+
+        @Override
+        public String refresh() {
+            return "https://openapi.baidu.com/oauth/2.0/token";
+        }
     }
 }
