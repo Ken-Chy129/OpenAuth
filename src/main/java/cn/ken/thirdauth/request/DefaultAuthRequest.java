@@ -7,6 +7,7 @@ import cn.ken.thirdauth.config.AuthPlatformConfig;
 import cn.ken.thirdauth.config.AuthUrls;
 import cn.ken.thirdauth.enums.AuthExceptionCode;
 import cn.ken.thirdauth.exception.AuthException;
+import cn.ken.thirdauth.model.AuthGet;
 import cn.ken.thirdauth.model.AuthCallback;
 import cn.ken.thirdauth.model.AuthResponse;
 import cn.ken.thirdauth.model.AuthToken;
@@ -27,7 +28,7 @@ import java.util.UUID;
  * @since 2023/3/15 18:50
  */
 public abstract class DefaultAuthRequest implements AuthRequest {
-    
+
     protected final AuthUrls source;
 
     protected final AuthPlatformConfig config;
@@ -52,10 +53,10 @@ public abstract class DefaultAuthRequest implements AuthRequest {
     @Override
     public String authorizeUrl(String authorizer) {
         return UrlBuilder.fromBaseUrl(source.authorize())
-                .add(AuthConstant.RESPONSE_TYPE, "code")
+                .add(AuthConstant.Authorize.RESPONSE_TYPE, "code")
                 .add(AuthConstant.CLIENT_ID, config.getClientId())
                 .add(AuthConstant.REDIRECT_URI, config.getRedirectUri())
-                .add(AuthConstant.STATE, authorizer != null ? generateAndPutState(authorizer) : null)
+                .add(AuthConstant.Authorize.STATE, authorizer != null ? generateAndPutState(authorizer) : null)
                 .build();
     }
 
@@ -85,25 +86,24 @@ public abstract class DefaultAuthRequest implements AuthRequest {
     }
 
     @Override
-    public AuthResponse<AuthToken> getAccessToken(AuthCallback callback) {
+    public final AuthResponse<AuthToken> getAccessToken(AuthCallback callback) {
         return getAccessToken(null, callback);
     }
 
     @Override
-    public AuthResponse<AuthToken> getAccessToken(String authorizer, AuthCallback callback) {
+    public final AuthResponse<AuthToken> getAccessToken(String authorizer, AuthCallback callback) {
         try {
             // 如果传入了授权者，则表明需要校验state
             if (authorizer != null) {
                 checkState(authorizer, callback.getState());
             }
             // 根据不同平台的参数需求不同，可选择重写生成请求路径的策略
-            String url = getAccessTokenUrl(callback.getCode());
-            String response = HttpClientUtil.doGet(url);
+            String response = HttpClientUtil.doAuthGet(generateAccessTokenRequest(callback.getCode()));
             Map<String, String> responseMap = HttpClientUtil.parseResponseEntity(response);
             // 请求发送错误时不同平台响应不同，故委托给使用者实现，如果有错误则抛出异常
-            dealWithResponseException(responseMap);
+            parseResponseException(responseMap);
             // 请求成功则对响应结果进行封装
-            AuthToken authToken = setAuthToken(responseMap);
+            AuthToken authToken = parseAccessToken(responseMap);
             return new AuthResponse<AuthToken>().exceptionStatus(AuthExceptionCode.SUCCESS, authToken);
         } catch (AuthException e) {
             return new AuthResponse<>(e.getCode(), e.getMsg(), null);
@@ -111,72 +111,111 @@ public abstract class DefaultAuthRequest implements AuthRequest {
     }
 
     @Override
-    public AuthResponse<AuthUserInfo> getUserInfo(String accessToken) {
+    public final AuthResponse<AuthUserInfo> getUserInfo(AuthToken authToken) {
         try {
-            String response;
-            if (setUserInfoHeaders(accessToken) == null) {
-                response = HttpClientUtil.doGet(getUserInfoUrl(accessToken));
-            } else {
-                response = HttpClientUtil.doGetWithHeaders(getUserInfoUrl(accessToken), setUserInfoHeaders(accessToken));
-            }
+            setOpenId(authToken);
+            String response = HttpClientUtil.doAuthGet(generateUserInfoRequest(authToken));
             Map<String, String> responseMap = HttpClientUtil.parseResponseEntityJson(response);
-            dealWithResponseException(responseMap);
-            AuthUserInfo authUserInfo = setUserInfo(responseMap);
+            if (authToken.getOpenId() != null) {
+                responseMap.put("openid", authToken.getOpenId());
+            }
+            parseResponseException(responseMap);
+            AuthUserInfo authUserInfo = parseUserInfo(responseMap);
             authUserInfo.setRawUserInfo(JSON.parseObject(response));
-            authUserInfo.setToken(accessToken);
+            authUserInfo.setToken(authToken);
             return new AuthResponse<>(AuthExceptionCode.SUCCESS.getCode(), AuthExceptionCode.SUCCESS.getMsg(), authUserInfo);
         } catch (AuthException e) {
             return new AuthResponse<>(e.getCode(), e.getMsg(), null);
         }
     }
 
-    protected void dealWithResponseException(Map<String, String> responseMap) {
-        if (responseMap.containsKey("error")) {
-            throw new AuthException(responseMap.get("error_description"));
+    @Override
+    public final AuthResponse<AuthToken> refresh(AuthToken authToken) {
+        try {
+            String response = HttpClientUtil.doAuthGet(generateUserInfoRequest(authToken));
+            Map<String, String> responseMap = HttpClientUtil.parseResponseEntityJson(response);
+            parseResponseException(responseMap);
+            AuthToken newAuthToken = parseAccessToken(responseMap);
+            return new AuthResponse<>(AuthExceptionCode.SUCCESS.getCode(), AuthExceptionCode.SUCCESS.getMsg(), newAuthToken);
+        } catch (AuthException e) {
+            return new AuthResponse<>(e.getCode(), e.getMsg(), null);
         }
     }
 
     /**
-     * 通过授权码生成请求令牌的url
+     * 通过授权码生成请求令牌的Get请求封装体
      *
      * @param code 授权码
-     * @return 请求令牌的url
+     * @return 请求令牌的Get请求封装体
      */
-    protected abstract String getAccessTokenUrl(String code);
+    protected abstract AuthGet generateAccessTokenRequest(String code);
 
-    protected AuthToken setAuthToken(Map<String, String> responseMap) {
+    /**
+     * 通过访问令牌生成请求用户信息的Get请求封装体
+     *
+     * @param authToken 授权令牌封装体
+     * @return 请求用户信息的Get请求封装体
+     */
+    protected abstract AuthGet generateUserInfoRequest(AuthToken authToken);
+
+    /**
+     * 通过刷新令牌请求访问令牌的Get请求封装体
+     *
+     * @param authToken 授权令牌封装体
+     * @return 刷新访问令牌的Get请求封装体
+     */
+    protected AuthGet generateRefreshRequest(AuthToken authToken) {
+        throw new AuthException(AuthExceptionCode.NOT_IMPLEMENTED);
+    }
+
+    /**
+     * 默认的请求错误信息处理
+     *
+     * @param responseMap 原始响应体的键值对
+     */
+    protected void parseResponseException(Map<String, String> responseMap) {
+        String[] errorCodeFields = new String[]{"error", "error_code"};
+        String[] errorMsgFields = new String[]{"error_msg", "error_description"};
+        String errorCode, errorMsg;
+        for (String errorCodeField : errorCodeFields) {
+            if ((errorCode = responseMap.get(errorCodeField)) != null) {
+                for (String errorMsgField : errorMsgFields) {
+                    if ((errorMsg = responseMap.get(errorMsgField)) != null) {
+                        throw new AuthException(Integer.parseInt(responseMap.get(errorCode)), responseMap.get(errorMsg));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 默认的令牌解析
+     * 
+     * @param responseMap 原始响应体的键值对
+     * @return 授权令牌封装体
+     */
+    protected AuthToken parseAccessToken(Map<String, String> responseMap) {
         return AuthToken.builder()
-                .accessToken(responseMap.get(AuthConstant.ACCESS_TOKEN))
-                .refreshToken(responseMap.get(AuthConstant.REFRESH_TOKEN))
-                .expireIn(Integer.parseInt(responseMap.get(AuthConstant.EXPIRE))).build();
+                .accessToken(responseMap.get(AuthConstant.Token.ACCESS_TOKEN))
+                .expireIn(Integer.parseInt(responseMap.get(AuthConstant.Token.EXPIRE)))
+                .refreshToken(responseMap.get(AuthConstant.Token.REFRESH_TOKEN))
+                .scope(responseMap.get(AuthConstant.Token.SCOPE))
+                .build();
     }
-
-    /**
-     * 通过访问令牌生成请求用户信息的url
-     *
-     * @param accessToken 访问令牌
-     * @return 请求用户信息的url
-     */
-    protected abstract String getUserInfoUrl(String accessToken);
-
-    /**
-     * 请求用户信息时携带的请求头，默认访问令牌拼接在请求路径中，请求头为空
-     *
-     * @param accessToken 访问令牌
-     * @return 发送获取用户信息请求时携带的请求头
-     */
-    protected Map<String, String> setUserInfoHeaders(String accessToken) {
-        return null;
-    }
-
+    
     /**
      * 根据不同开放平台响应结果的不同封装AuthUserInfo
      *
      * @param responseMap 原始响应体的键值对
      * @return 封装后的AuthUserInfo对象
      */
-    protected AuthUserInfo setUserInfo(Map<String, String> responseMap) {
-        throw new AuthException(AuthExceptionCode.UNSUPPORTED);
-    }
+    protected abstract AuthUserInfo parseUserInfo(Map<String, String> responseMap);
+    
+    /**
+     * 提供给需要先请求openId的平台调用
+     *
+     * @param authToken 授权令牌封装体
+     */
+    protected void setOpenId(AuthToken authToken) {}
 
 }

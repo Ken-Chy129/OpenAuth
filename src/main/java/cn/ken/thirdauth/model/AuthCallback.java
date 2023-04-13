@@ -1,12 +1,8 @@
 package cn.ken.thirdauth.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
-
-
 
 
 /**
@@ -18,6 +14,7 @@ import java.io.Serializable;
  * @since 2023/3/15 17:34
  */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthCallback implements Serializable {

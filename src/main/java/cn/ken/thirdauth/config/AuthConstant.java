@@ -10,31 +10,41 @@ package cn.ken.thirdauth.config;
  */
 public class AuthConstant {
 
-    public static String RESPONSE_TYPE = "response_type";
+    public static final String CLIENT_ID = "client_id";
 
-    public static String CLIENT_ID = "client_id";
+    public static final String CLIENT_SECRET = "client_secret";
 
-    public static String CLIENT_SECRET = "client_secret";
+    public static final String REDIRECT_URI = "redirect_uri";
+    
+    public static final String DISPLAY = "display";
+    
+    public static class Authorize {
+        
+        public static final String RESPONSE_TYPE = "response_type";
+        
+        public static final String STATE = "state";
+    }
+    
+    public static class Token {
 
-    public static String REDIRECT_URI = "redirect_uri";
+        public static final String CODE = "code";
 
-    public static String STATE = "state";
+        public static final String GRANT_TYPE = "grant_type";
 
-    public static String CODE = "code";
+        public static final String EXPIRE = "expires_in";
 
-    public static String ACCESS_TOKEN = "access_token";
-
-    public static String REFRESH_TOKEN = "refresh_token";
-
-    public static String GRANT_TYPE = "grant_type";
-
-    public static String EXPIRE = "expires_in";
-
+        public static final String ACCESS_TOKEN = "access_token";
+        
+        public static final String REFRESH_TOKEN = "refresh_token";
+        
+        public static final String SCOPE = "scope";
+    }
+    
     public static class GrantType {
 
-        public static String ACCESS = "authorization_code";
+        public static final String ACCESS = "authorization_code";
 
-        public static String REFRESH = "refresh_token";
+        public static final String REFRESH = "refresh_token";
     }
 
 }

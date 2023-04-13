@@ -54,15 +54,15 @@ public interface AuthRequest {
     /**
      * 根据用户访问令牌获取用户信息
      *
-     * @param accessToken 用户访问令牌
+     * @param authToken 授权令牌封装体
      * @return 用户信息
      */
-    AuthResponse<AuthUserInfo> getUserInfo(String accessToken);
+    AuthResponse<AuthUserInfo> getUserInfo(AuthToken authToken);
 
     /**
      * 撤销授权，非必要实现
      *
-     * @param authToken 登录成功后返回的Token信息
+     * @param authToken 授权令牌封装体
      * @return 是否撤销成功
      */
     default AuthResponse<Boolean> revoke(AuthToken authToken) {
