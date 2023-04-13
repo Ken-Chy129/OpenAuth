@@ -5,15 +5,8 @@ import cn.ken.thirdauth.cache.DefaultAuthStateCache;
 import cn.ken.thirdauth.config.AuthConstant;
 import cn.ken.thirdauth.config.AuthPlatformConfig;
 import cn.ken.thirdauth.config.AuthPlatformInfo;
-import cn.ken.thirdauth.enums.AuthExceptionCode;
-import cn.ken.thirdauth.exception.AuthException;
-import cn.ken.thirdauth.model.AuthCallback;
-import cn.ken.thirdauth.model.AuthResponse;
-import cn.ken.thirdauth.model.AuthToken;
 import cn.ken.thirdauth.model.AuthUserInfo;
-import cn.ken.thirdauth.util.HttpClientUtil;
 import cn.ken.thirdauth.util.UrlBuilder;
-import com.alibaba.fastjson.JSON;
 
 import java.util.Map;
 

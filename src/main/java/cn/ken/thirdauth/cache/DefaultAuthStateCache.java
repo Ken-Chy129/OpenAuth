@@ -1,7 +1,6 @@
 package cn.ken.thirdauth.cache;
 
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
