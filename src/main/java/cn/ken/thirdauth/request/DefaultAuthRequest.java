@@ -60,31 +60,6 @@ public abstract class DefaultAuthRequest implements AuthRequest {
                 .build();
     }
 
-    /**
-     * 生成随机字符串作为state，并与userId关联保存在缓存中<br>
-     * 如果不使用state则不需要重写
-     *
-     * @param authorizer 授权者唯一标识
-     * @return 随机字符串state
-     */
-    protected String generateAndPutState(String authorizer) {
-        String state = UUID.randomUUID().toString();
-        cache.set(authorizer, state);
-        return state;
-    }
-
-    /**
-     * 根据userId校验state是否合法，即判断是否是当前用户执行的操作，如果不合法则抛出异常
-     *
-     * @param authorizer 当前操作的用户的唯一标识
-     * @param state      调用该操作时传入的身份证明，可以在开放平台确认授权后的回调地址参数中拿到
-     */
-    protected void checkState(String authorizer, String state) {
-        if (state == null || state.isBlank() || cache.get(authorizer).equals(state)) {
-            throw new AuthException(AuthExceptionCode.ILLEGAL_STATUS);
-        }
-    }
-
     @Override
     public final AuthResponse<AuthToken> getAccessToken(AuthCallback callback) {
         return getAccessToken(null, callback);
@@ -217,5 +192,30 @@ public abstract class DefaultAuthRequest implements AuthRequest {
      * @param authToken 授权令牌封装体
      */
     protected void setOpenId(AuthToken authToken) {}
+    
+    /**
+     * 生成随机字符串作为state，并与userId关联保存在缓存中<br>
+     * 如果不使用state则不需要重写
+     *
+     * @param authorizer 授权者唯一标识
+     * @return 随机字符串state
+     */
+    protected String generateAndPutState(String authorizer) {
+        String state = UUID.randomUUID().toString();
+        cache.set(authorizer, state);
+        return state;
+    }
+
+    /**
+     * 根据userId校验state是否合法，即判断是否是当前用户执行的操作，如果不合法则抛出异常
+     *
+     * @param authorizer 当前操作的用户的唯一标识
+     * @param state      调用该操作时传入的身份证明，可以在开放平台确认授权后的回调地址参数中拿到
+     */
+    protected void checkState(String authorizer, String state) {
+        if (state == null || state.isBlank() || cache.get(authorizer).equals(state)) {
+            throw new AuthException(AuthExceptionCode.ILLEGAL_STATUS);
+        }
+    }
 
 }
