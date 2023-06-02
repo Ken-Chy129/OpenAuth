@@ -64,8 +64,10 @@ public class QqAuthRequest extends DefaultAuthRequest {
 
     @Override
     protected void parseResponseException(Map<String, String> responseMap) {
-        if (Integer.parseInt(responseMap.get("ret")) != 0) {
-            throw new AuthException(Integer.parseInt(responseMap.get("ret")), responseMap.get("msg"));
+        if (responseMap.containsKey("ret")) {
+            if (Integer.parseInt(responseMap.get("ret")) != 0) {
+                throw new AuthException(Integer.parseInt(responseMap.get("ret")), responseMap.get("msg"));
+            }
         }
         if (responseMap.containsKey("code")) {
             throw new AuthException(Integer.parseInt(responseMap.get("code")), responseMap.get("msg"));
