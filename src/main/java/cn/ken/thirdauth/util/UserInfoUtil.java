@@ -30,7 +30,7 @@ public class UserInfoUtil {
     }
 
     public static UserGender getRealGender(String originalGender) {
-        if (null == originalGender || UserGender.UNKNOWN.getCode() == Integer.parseInt(originalGender)) {
+        if (null == originalGender) {
             return UserGender.UNKNOWN;
         }
         String[] males = {"m", "男", "1", "male"};
